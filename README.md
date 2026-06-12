@@ -8,8 +8,6 @@ The goal of this project is to practice a complete machine learning workflow, st
 
 ## Screenshots
 
-> If the screenshots do not appear on GitHub, make sure the image names inside the `assets` folder match these paths exactly. GitHub is case-sensitive.
-
 ### Home Page
 
 ![Home Page](./assets/Home_Page.png)
