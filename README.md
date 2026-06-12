@@ -6,6 +6,13 @@ The goal of this project is to practice a complete machine learning workflow, st
 
 ---
 
+## Project Links
+
+* **GitHub Repository:** [california-housing-value-estimator](https://github.com/Nagy-API/california-housing-value-estimator)
+* **Kaggle Notebook:** [California Housing Price Prediction](https://www.kaggle.com/code/mlnagy/california-housing-price-prediction)
+
+---
+
 ## Screenshots
 
 ### Home Page
