@@ -10,11 +10,11 @@ The goal of this project is to practice a complete machine learning workflow, st
 
 ### Home Page
 
-![Home Page](./assets/Home_Page.png)
+![Home Page](./assests/Home_Page.png)
 
 ### Prediction Result and History
 
-![Prediction Result and History](./assets/prediction-history.png)
+![Prediction Result and History](./assests/prediction-history.png)
 
 ---
 
