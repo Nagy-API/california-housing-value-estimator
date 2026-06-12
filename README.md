@@ -8,13 +8,15 @@ The goal of this project is to practice a complete machine learning workflow, st
 
 ## Screenshots
 
+> If the screenshots do not appear on GitHub, make sure the image names inside the `assets` folder match these paths exactly. GitHub is case-sensitive.
+
 ### Home Page
 
-![Home Page](assets/Home_Page.png)
+![Home Page](./assets/Home_Page.png)
 
 ### Prediction Result and History
 
-![Prediction Result and History](assets/prediction-history.png)
+![Prediction Result and History](./assets/prediction-history.png)
 
 ---
 
@@ -67,7 +69,7 @@ Housing Price Prediction/
 │
 ├── assets/
 │   ├── Home_Page.png
-│   └── Predection&History.png
+│   └── prediction-history.png
 │
 ├── data/
 │   └── housing.csv
@@ -76,7 +78,7 @@ Housing Price Prediction/
 │   └── .gitkeep
 │
 ├── model/
-│   └── housing_price_model.joblib
+│   └── .gitkeep
 │
 ├── notebook/
 │   └── Housing Price Prediction.ipynb
@@ -108,13 +110,13 @@ The notebook includes the following steps:
 
 ## Models Tried
 
-| Model                   | Notes                                             |
-| ----------------------- | ------------------------------------------------- |
-| DummyRegressor          | Used as a simple baseline                         |
-| Linear Regression       | Better than baseline, but limited                 |
+| Model | Notes |
+|---|---|
+| DummyRegressor | Used as a simple baseline |
+| Linear Regression | Better than baseline, but limited |
 | Decision Tree Regressor | Improved test error but overfit the training data |
-| Random Forest Regressor | Best model before tuning                          |
-| Tuned Random Forest     | Final selected model                              |
+| Random Forest Regressor | Best model before tuning |
+| Tuned Random Forest | Final selected model |
 
 ---
 
@@ -122,11 +124,11 @@ The notebook includes the following steps:
 
 The final selected model was a tuned Random Forest Regressor.
 
-| Metric   | Test Score |
-| -------- | ---------: |
-| MAE      |     ~31.4K |
-| RMSE     |     ~48.5K |
-| R² Score |     ~0.821 |
+| Metric | Test Score |
+|---|---:|
+| MAE | ~31.4K |
+| RMSE | ~48.5K |
+| R² Score | ~0.821 |
 
 The tuned Random Forest gave the best overall performance compared to the other models.
 
@@ -163,6 +165,26 @@ The FastAPI app includes:
 
 ---
 
+## Model File
+
+The trained model file is not included in this repository because it can be generated from the notebook.
+
+To create the model file, run the notebook:
+
+```text
+notebook/Housing Price Prediction.ipynb
+```
+
+After running the training and saving steps, the notebook will generate:
+
+```text
+model/housing_price_model.joblib
+```
+
+The FastAPI app needs this file before running the prediction page.
+
+---
+
 ## How to Run Locally
 
 ### 1. Clone the repository
@@ -196,13 +218,27 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Run the FastAPI app
+### 4. Generate the model file
+
+Open and run the notebook:
+
+```text
+notebook/Housing Price Prediction.ipynb
+```
+
+This creates:
+
+```text
+model/housing_price_model.joblib
+```
+
+### 5. Run the FastAPI app
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### 5. Open the app
+### 6. Open the app
 
 ```text
 http://127.0.0.1:8000
@@ -229,8 +265,9 @@ Expected response:
 ## Notes
 
 - The SQLite database file is generated at runtime and should not be pushed to GitHub.
-- The trained model is stored in `model/housing_price_model.joblib`.
+- The trained model file is generated from the notebook and should not be pushed if it is too large.
 - The final app uses the original feature set because Random Forest performed better without the engineered features in cross-validation.
+- Screenshot paths must match the actual image file names exactly.
 
 ---
 
