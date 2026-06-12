@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Housing Value Estimator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <main class="page">
+
+        <header class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">Machine Learning Regression App</p>
+
+                <h1>California Housing Value Estimator</h1>
+
+                <p class="subtitle">
+                    Estimate residential property values from housing district features using a trained machine learning pipeline.
+                </p>
+
+                <div class="hero-tags">
+                    <span>FastAPI</span>
+                    <span>scikit-learn</span>
+                    <span>Random Forest</span>
+                    <span>SQLite History</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="layout">
+
+            <section class="panel form-panel">
+
+                <div class="panel-header">
+                    <div>
+                        <h2>Property Inputs</h2>
+                        <p>Enter the district-level housing features below to generate a price estimate.</p>
+                    </div>
+                </div>
+
+                {% if error %}
+                <div class="error-box">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form action="/predict" method="post" class="form" id="predictionForm">
+
+                    <div class="grid">
+                        <div class="input-group">
+                            <label>Longitude</label>
+                            <input type="number" step="any" name="longitude" required placeholder="-122.23"
+                                value="{{ form_data.get('longitude', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Latitude</label>
+                            <input type="number" step="any" name="latitude" required placeholder="37.88"
+                                value="{{ form_data.get('latitude', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Housing Median Age</label>
+                            <input type="number" step="any" name="housing_median_age" required placeholder="41"
+                                value="{{ form_data.get('housing_median_age', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Total Rooms</label>
+                            <input type="number" step="any" name="total_rooms" required placeholder="880"
+                                value="{{ form_data.get('total_rooms', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Total Bedrooms</label>
+                            <input type="number" step="any" name="total_bedrooms" required placeholder="129"
+                                value="{{ form_data.get('total_bedrooms', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Population</label>
+                            <input type="number" step="any" name="population" required placeholder="322"
+                                value="{{ form_data.get('population', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Households</label>
+                            <input type="number" step="any" name="households" required placeholder="126"
+                                value="{{ form_data.get('households', '') }}">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Median Income</label>
+                            <input type="number" step="any" name="median_income" required placeholder="8.3252"
+                                value="{{ form_data.get('median_income', '') }}">
+                        </div>
+
+                        <div class="input-group full">
+                            <label>Ocean Proximity</label>
+                            <select name="ocean_proximity" required>
+                                <option value="">Select location type</option>
+
+                                <option value="&lt;1H OCEAN"
+                                    {% if form_data.get('ocean_proximity') == '<1H OCEAN' %}selected{% endif %}>
+                                    &lt;1H OCEAN
+                                </option>
+
+                                <option value="INLAND"
+                                    {% if form_data.get('ocean_proximity') == 'INLAND' %}selected{% endif %}>
+                                    INLAND
+                                </option>
+
+                                <option value="ISLAND"
+                                    {% if form_data.get('ocean_proximity') == 'ISLAND' %}selected{% endif %}>
+                                    ISLAND
+                                </option>
+
+                                <option value="NEAR BAY"
+                                    {% if form_data.get('ocean_proximity') == 'NEAR BAY' %}selected{% endif %}>
+                                    NEAR BAY
+                                </option>
+
+                                <option value="NEAR OCEAN"
+                                    {% if form_data.get('ocean_proximity') == 'NEAR OCEAN' %}selected{% endif %}>
+                                    NEAR OCEAN
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" id="predictBtn" class="primary-btn">Estimate Value</button>
+                        <button type="button" class="secondary-btn" id="sampleBtn">Try Sample</button>
+                        <a href="/" class="clear-btn">Clear</a>
+                    </div>
+                </form>
+
+                {% if prediction is not none %}
+                <div class="result">
+                    <span class="result-label">Predicted Property Value</span>
+                    <h2>{{ formatted_prediction }}</h2>
+                    <p>Generated by the trained Random Forest pipeline.</p>
+                </div>
+                {% endif %}
+
+            </section>
+
+            <section class="panel history-panel">
+
+                <div class="history-header">
+                    <div>
+                        <h2>Prediction History</h2>
+                        <p>Inspect recent estimates, review full inputs, or reuse a previous scenario.</p>
+                    </div>
+
+                    {% if recent_predictions %}
+                    <form action="/clear-history" method="post">
+                        <button type="submit" class="history-clear-btn">Clear History</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                {% if recent_predictions %}
+                <div class="history-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Ocean</th>
+                                <th>Income</th>
+                                <th>Predicted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in recent_predictions %}
+                            <tr class="history-row">
+                                <td>{{ item.created_at }}</td>
+                                <td>{{ item.ocean_proximity }}</td>
+                                <td>{{ item.median_income }}</td>
+                                <td class="price-cell">{{ item.formatted_price }}</td>
+                                <td class="table-actions">
+                                    <button type="button" class="small-btn details-btn"
+                                        data-target="details-{{ item.id }}">
+                                        Details
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="small-btn use-btn"
+                                        data-longitude="{{ item.longitude }}"
+                                        data-latitude="{{ item.latitude }}"
+                                        data-housing_median_age="{{ item.housing_median_age }}"
+                                        data-total_rooms="{{ item.total_rooms }}"
+                                        data-total_bedrooms="{{ item.total_bedrooms }}"
+                                        data-population="{{ item.population }}"
+                                        data-households="{{ item.households }}"
+                                        data-median_income="{{ item.median_income }}"
+                                        data-ocean_proximity="{{ item.ocean_proximity }}"
+                                    >
+                                        Use Again
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="details-row" id="details-{{ item.id }}">
+                                <td colspan="5">
+                                    <div class="details-grid">
+                                        <div><span>Longitude</span><strong>{{ item.longitude }}</strong></div>
+                                        <div><span>Latitude</span><strong>{{ item.latitude }}</strong></div>
+                                        <div><span>Median Age</span><strong>{{ item.housing_median_age }}</strong></div>
+                                        <div><span>Total Rooms</span><strong>{{ item.total_rooms }}</strong></div>
+                                        <div><span>Total Bedrooms</span><strong>{{ item.total_bedrooms }}</strong></div>
+                                        <div><span>Population</span><strong>{{ item.population }}</strong></div>
+                                        <div><span>Households</span><strong>{{ item.households }}</strong></div>
+                                        <div><span>Median Income</span><strong>{{ item.median_income }}</strong></div>
+                                        <div><span>Ocean Proximity</span><strong>{{ item.ocean_proximity }}</strong></div>
+                                        <div><span>Prediction</span><strong>{{ item.formatted_price }}</strong></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No predictions yet</h3>
+                    <p>Your recent estimates will appear here after submitting the form.</p>
+                </div>
+                {% endif %}
+
+            </section>
+
+        </section>
+
+        <footer>
+            <p>Built with FastAPI · scikit-learn · SQLite</p>
+        </footer>
+
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
