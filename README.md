@@ -16,8 +16,6 @@ The goal of this project is to practice a complete machine learning workflow, st
 
 ![Prediction Result and History](assets/prediction-history.png)
 
-> Note: If you rename the second image, it is better to use `prediction-history.png` and update the image path in this README.
-
 ---
 
 ## Project Overview
